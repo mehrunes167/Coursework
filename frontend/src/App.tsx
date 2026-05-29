@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import CreateTrip from './pages/CreateTrip';
 
 
@@ -59,7 +58,6 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<CreateTrip />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

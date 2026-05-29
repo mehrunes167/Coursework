@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
-from app.routes import auth, trips, bookings
+from app.routes import auth, trips
 from app.services.db import init_db
 import os
 
-app = FastAPI(title="Travel Buddy API")
+app = FastAPI(title="Travel API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,19 +22,14 @@ async def startup_event():
 # API-роуты
 app.include_router(auth.router, prefix="/api")
 app.include_router(trips.router, prefix="/api")
-app.include_router(bookings.router, prefix="/api")
 
-# Путь к папке со статикой React
 BUILD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "build")
 BUILD_DIR = os.path.abspath(BUILD_DIR)
 
-# Обработчик 404 для SPA: всё, что не /api, направляем на index.html
 @app.exception_handler(404)
 async def spa_fallback(request: Request, exc):
-    # Если запрос к API, оставляем стандартный 404
     if request.url.path.startswith("/api"):
         return JSONResponse(status_code=404, content={"detail": "Not Found"})
-    # Иначе пытаемся отдать статический файл (JS, CSS) или index.html
     full_path = request.url.path.lstrip("/")
     file_path = os.path.join(BUILD_DIR, full_path)
     if full_path and os.path.isfile(file_path):
@@ -44,7 +39,6 @@ async def spa_fallback(request: Request, exc):
         return FileResponse(index_file)
     return JSONResponse(status_code=404, content={"detail": "Static file not found"})
 
-# На всякий случай оставим корневой маршрут для явного index.html
 @app.get("/")
 async def root():
     index_file = os.path.join(BUILD_DIR, "index.html")
