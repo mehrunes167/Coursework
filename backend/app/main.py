@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from app.routes import auth, trips
 from app.services.db import init_db
 import os
@@ -45,3 +46,7 @@ async def root():
     if os.path.isfile(index_file):
         return FileResponse(index_file)
     return {"message": "Build folder not found"}
+
+build_dir = os.path.join(os.path.dirname(__file__), "..", "..", "frontend", "build")
+if os.path.isdir(build_dir):
+    app.mount("/", StaticFiles(directory=build_dir, html=True), name="static")
